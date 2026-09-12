@@ -339,32 +339,32 @@ sequenceDiagram
 
 ```mermaid
 flowchart TD
-    Start([対象期間の準備開始]) --> Create[店長: シフト表を作成<br/>status=Draft]
-    Create --> Open[希望提出期間を開始]
-    Open --> Submit{スタッフ:<br/>希望を提出}
+    Start(["対象期間の準備開始"]) --> Create["店長: シフト表を作成<br/>status=Draft"]
+    Create --> Open["希望提出期間を開始"]
+    Open --> Submit{"スタッフ:<br/>希望を提出"}
 
-    Submit -->|締切前| Accept[希望を受理・保存]
-    Submit -->|締切後| Reject[R-09 拒否]
+    Submit -->|締切前| Accept["希望を受理・保存"]
+    Submit -->|締切後| Reject["R-09 拒否"]
     Reject --> Submit
-    Accept --> Deadline{締切到来?}
+    Accept --> Deadline{"締切到来?"}
     Deadline -->|まだ| Submit
     Deadline -->|到来| Assign
 
-    Assign[店長: 割当を追加・削除] --> Check[検査を実行<br/>ShiftRuleChecker]
-    Check --> HasV{違反あり?}
+    Assign["店長: 割当を追加・削除"] --> Check["検査を実行<br/>ShiftRuleChecker"]
+    Check --> HasV{"違反あり?"}
 
-    HasV -->|あり| Show[違反一覧を提示<br/>ルールID・日・枠・スタッフ]
+    HasV -->|あり| Show["違反一覧を提示<br/>ルールID・日・枠・スタッフ"]
     Show --> Assign
 
-    HasV -->|なし| Confirm[店長: 確定<br/>status=Confirmed]
-    Confirm --> Event[ShiftScheduleConfirmed 発行]
-    Event --> Notify[/スコープ外:<br/>通知・勤怠・給与へ連携/]
-    Notify --> Done([確定済みシフト])
+    HasV -->|なし| Confirm["店長: 確定<br/>status=Confirmed"]
+    Confirm --> Event["ShiftScheduleConfirmed 発行"]
+    Event --> Notify[/"スコープ外:<br/>通知・勤怠・給与へ連携"/]
+    Notify --> Done(["確定済みシフト"])
 
-    Done --> NeedFix{修正が必要?}
-    NeedFix -->|はい| Unconfirm[店長: 確定取消<br/>status=Draft]
+    Done --> NeedFix{"修正が必要?"}
+    NeedFix -->|はい| Unconfirm["店長: 確定取消<br/>status=Draft"]
     Unconfirm --> Assign
-    NeedFix -->|いいえ| End([対象期間の終了])
+    NeedFix -->|いいえ| End(["対象期間の終了"])
 
     style Reject fill:#ffe8e8,stroke:#c00
     style Show fill:#fff4e8,stroke:#c80
@@ -376,21 +376,21 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    In([check 開始]) --> Load[割当中の staffId を収集]
-    Load --> Prof[StaffRepository から Staff を取得<br/>→ StaffProfile に変換]
-    Prof --> Req[ShiftRequestRepository から<br/>対象期間の希望を取得]
-    Req --> Loop[ShiftRuleChecker に渡す]
+    In(["check 開始"]) --> Load["割当中の staffId を収集"]
+    Load --> Prof["StaffRepository から Staff を取得<br/>→ StaffProfile に変換"]
+    Prof --> Req["ShiftRequestRepository から<br/>対象期間の希望を取得"]
+    Req --> Loop["ShiftRuleChecker に渡す"]
 
-    Loop --> R1[R-01 未成年の深夜割当]
-    R1 --> R2[R-02 週40時間上限]
-    R2 --> R3[R-03 連続勤務6日上限]
-    R3 --> R4[R-04 深夜翌日の早番・中番禁止]
-    R4 --> R5[R-05 各枠 最低2名]
-    R5 --> R6[R-06 各枠 レジ研修者1名以上]
-    R6 --> R7[R-07 同一枠の重複割当]
-    R7 --> R8[R-08 希望外の割当]
-    R8 --> Agg[全違反を集約]
-    Agg --> Out([List~Violation~ を返却])
+    Loop --> R1["R-01 未成年の深夜割当"]
+    R1 --> R2["R-02 週40時間上限"]
+    R2 --> R3["R-03 連続勤務6日上限"]
+    R3 --> R4["R-04 深夜翌日の早番・中番禁止"]
+    R4 --> R5["R-05 各枠 最低2名"]
+    R5 --> R6["R-06 各枠 レジ研修者1名以上"]
+    R6 --> R7["R-07 同一枠の重複割当"]
+    R7 --> R8["R-08 希望外の割当"]
+    R8 --> Agg["全違反を集約"]
+    Agg --> Out(["List~Violation~ を返却"])
 
     style Loop fill:#e8f4ff,stroke:#2b6cb0
 ```
@@ -436,22 +436,22 @@ erDiagram
     }
 
     SHIFT_ASSIGNMENT {
-        uuid schedule_id PK_FK
+        uuid schedule_id PK,FK
         date shift_date PK
         string shift_slot PK "EARLY|MIDDLE|LATE|NIGHT"
-        uuid staff_id PK_FK
+        uuid staff_id PK,FK
     }
 
     SHIFT_REQUEST {
-        uuid staff_id PK_FK
+        uuid staff_id PK,FK
         date period_from PK
         date period_to
         timestamp submitted_at "nullable"
     }
 
     SHIFT_REQUEST_SLOT {
-        uuid staff_id PK_FK
-        date period_from PK_FK
+        uuid staff_id PK,FK
+        date period_from PK,FK
         date shift_date PK
         string shift_slot PK
     }
